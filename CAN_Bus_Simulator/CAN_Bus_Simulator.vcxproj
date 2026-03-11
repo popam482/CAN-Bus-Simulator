@@ -130,6 +130,7 @@
     <ClCompile Include="DashboardECU.cpp" />
     <ClCompile Include="EngineECU.cpp" />
     <ClCompile Include="ICanNode.cpp" />
+    <ClCompile Include="TransmissionECU.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="BrakeECU.h" />
@@ -138,6 +139,7 @@
     <ClInclude Include="DashboardECU.h" />
     <ClInclude Include="EngineECU.h" />
     <ClInclude Include="ICanNode.h" />
+    <ClInclude Include="TransmissionECU.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

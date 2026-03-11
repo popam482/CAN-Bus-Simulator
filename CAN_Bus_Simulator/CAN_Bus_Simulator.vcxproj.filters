@@ -36,6 +36,9 @@
     <ClCompile Include="BrakeECU.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="TransmissionECU.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="CANFrame.h">
@@ -54,6 +57,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="BrakeECU.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="TransmissionECU.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
