@@ -123,19 +123,23 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="AbsECU.cpp" />
     <ClCompile Include="BrakeECU.cpp" />
     <ClCompile Include="CANBus.cpp" />
     <ClCompile Include="CANFrame.cpp" />
     <ClCompile Include="CAN_Bus_Simulator.cpp" />
+    <ClCompile Include="ClimateControlECU.cpp" />
     <ClCompile Include="DashboardECU.cpp" />
     <ClCompile Include="EngineECU.cpp" />
     <ClCompile Include="ICanNode.cpp" />
     <ClCompile Include="TransmissionECU.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="AbsECU.h" />
     <ClInclude Include="BrakeECU.h" />
     <ClInclude Include="CANBus.h" />
     <ClInclude Include="CANFrame.h" />
+    <ClInclude Include="ClimateControlECU.h" />
     <ClInclude Include="DashboardECU.h" />
     <ClInclude Include="EngineECU.h" />
     <ClInclude Include="ICanNode.h" />
