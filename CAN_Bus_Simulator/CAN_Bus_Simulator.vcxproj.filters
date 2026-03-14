@@ -45,6 +45,9 @@
     <ClCompile Include="ClimateControlECU.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="BcmECU.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="CANFrame.h">
@@ -72,6 +75,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="ClimateControlECU.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="BcmECU.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

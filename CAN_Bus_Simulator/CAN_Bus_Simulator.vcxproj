@@ -124,6 +124,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="AbsECU.cpp" />
+    <ClCompile Include="BcmECU.cpp" />
     <ClCompile Include="BrakeECU.cpp" />
     <ClCompile Include="CANBus.cpp" />
     <ClCompile Include="CANFrame.cpp" />
@@ -136,6 +137,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AbsECU.h" />
+    <ClInclude Include="BcmECU.h" />
     <ClInclude Include="BrakeECU.h" />
     <ClInclude Include="CANBus.h" />
     <ClInclude Include="CANFrame.h" />

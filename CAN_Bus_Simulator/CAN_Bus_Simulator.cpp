@@ -8,6 +8,7 @@
 #include "TransmissionECU.h"
 #include "AbsECU.h"
 #include "ClimateControlECU.h"
+#include "BcmECU.h"
 
 int main() {
     CANBus vehicleBus;
@@ -18,6 +19,8 @@ int main() {
     TransmissionECU transmission(vehicleBus);
     AbsECU abs(vehicleBus);
     ClimateControlECU climate(vehicleBus, 22.0f, 28.0f);
+    BcmECU bcm(vehicleBus);
+
 
     vehicleBus.connectNode(&engine);
     vehicleBus.connectNode(&dashboard);
@@ -25,10 +28,22 @@ int main() {
     vehicleBus.connectNode(&transmission);
     vehicleBus.connectNode(&abs);
     vehicleBus.connectNode(&climate);
+    vehicleBus.connectNode(&bcm);
 
     std::cout << "\n--- Starting Simulation ---\n" << std::endl;
 
+    bcm.lockDoors();
+
+    std::this_thread::sleep_for(std::chrono::milliseconds(100));
+
+    bcm.turnHeadLights(true);
+    bcm.turnFogLights(true);
+    std::this_thread::sleep_for(std::chrono::milliseconds(100));
+
     engine.sendSpeed(50);
+    std::this_thread::sleep_for(std::chrono::milliseconds(100));
+
+    bcm.isRaining(true);
     std::this_thread::sleep_for(std::chrono::milliseconds(100));
 
     climate.setTargetTemp(20.0f);
@@ -41,6 +56,7 @@ int main() {
     brakes.pressBrake();
     std::this_thread::sleep_for(std::chrono::milliseconds(100));
 
+
     climate.setTargetTemp(22.5f);
     std::this_thread::sleep_for(std::chrono::seconds(3));
     climate.displayStatus();
@@ -48,15 +64,26 @@ int main() {
     engine.sendSpeed(70);
     std::this_thread::sleep_for(std::chrono::milliseconds(200));
 
+    bcm.displayStatus();
+
     brakes.pressBrake();
     std::this_thread::sleep_for(std::chrono::milliseconds(100));
 
     engine.sendSpeed(30);
     std::this_thread::sleep_for(std::chrono::milliseconds(100));
 
+    bcm.isRaining(false);
+    std::this_thread::sleep_for(std::chrono::milliseconds(100));
+
     climate.setTargetTemp(21.0f);
     std::this_thread::sleep_for(std::chrono::seconds(1));
     climate.displayStatus();
+
+    bcm.unlockDoors();
+    std::this_thread::sleep_for(std::chrono::milliseconds(100));
+
+    bcm.displayStatus();
+    std::this_thread::sleep_for(std::chrono::milliseconds(100));
 
     engine.shutdown();
     transmission.shutdown();
