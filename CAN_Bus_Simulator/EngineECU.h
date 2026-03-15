@@ -34,6 +34,8 @@ private:
 	void senderWorker();
 	void updateFluidLevels(uint8_t speed);
 
+	void updateFuelLevel(uint8_t speed);
+
 public:
 	EngineECU(CANBus& b);
 	~EngineECU();

@@ -57,10 +57,23 @@ void EngineECU::getRPMData()
 
 void EngineECU::calculateRPM(uint8_t speed) {
 	
-	engineRPM = speed * 80;
+	if (speed == 0) {
+		engineRPM = 800;
+	}
+	else {
+		engineRPM = 800 + (speed * 80);
+	}
 
-	if (engineRPM < 800) engineRPM = 800;
-	if (engineRPM > 7000) engineRPM = 7000;  
+	if (engineRPM > 7000) engineRPM = 7000;
+}
+
+void EngineECU::updateFuelLevel(uint8_t speed) {
+	if (speed > 0) {
+		fuelTankLevel -= (speed * 0.00001f);
+	}
+
+	if (fuelTankLevel < 0.0f) fuelTankLevel = 0.0f;
+	if (fuelTankLevel > 1.0f) fuelTankLevel = 1.0f;
 }
 
 void EngineECU::calculateFuelConsumption(uint8_t speed) {
@@ -98,6 +111,33 @@ void EngineECU::senderWorker() {
 			frame.setId(0x101);
 			frame.setData({ speed });
 			bus.send(this, frame);
+
+			CANFrame rpmFrame;
+			rpmFrame.setId(0x102);
+			uint8_t rpmHigh = (engineRPM >> 8) & 0xFF;
+			uint8_t rpmLow = engineRPM & 0xFF;
+			rpmFrame.setData({ rpmHigh, rpmLow });
+			bus.send(this, rpmFrame);
+
+			CANFrame fuelFrame;
+			fuelFrame.setId(0x103);
+			uint8_t fuelPercent = static_cast<uint8_t>(fuelTankLevel * 100);
+			fuelFrame.setData({ fuelPercent });
+			bus.send(this, fuelFrame);
+
+			CANFrame oilFrame;
+			oilFrame.setId(0x104);
+			uint8_t oilTemp = static_cast<uint8_t>(oil.temperature);
+			uint8_t oilLevel = static_cast<uint8_t>(oil.level * 100);
+			oilFrame.setData({ oilTemp, oilLevel });
+			bus.send(this, oilFrame);
+
+			CANFrame coolantFrame;
+			coolantFrame.setId(0x105);
+			uint8_t coolantTemp = static_cast<uint8_t>(coolant.temperature);
+			uint8_t coolantLevel = static_cast<uint8_t>(coolant.level * 100);
+			coolantFrame.setData({ coolantTemp, coolantLevel });
+			bus.send(this, coolantFrame);
 		}
 	}
 }

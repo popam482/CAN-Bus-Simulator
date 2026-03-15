@@ -125,6 +125,10 @@ int main() {
     transmission.shutdown();
     dashboard.shutdown();
     brakes.shutdown();
+    abs.shutdown();           
+    climate.shutdown();       
+    bcm.shutdown();           
+    gateway.shutdown();
 
     std::cout << "\n--- Simulation ended ---\n" << std::endl;
 

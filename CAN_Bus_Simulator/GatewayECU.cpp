@@ -21,12 +21,25 @@ std::string GatewayECU::getName() {
 
 void GatewayECU::setupRoutingRules() {
     powertrainToComfortMessages.insert(0x101);
-    powertrainToComfortMessages.insert(0x201);  
-    powertrainToComfortMessages.insert(0x301);  
-    powertrainToComfortMessages.insert(0x401);  
+
+    powertrainToComfortMessages.insert(0x102);
+
+    powertrainToComfortMessages.insert(0x103);
+
+    powertrainToComfortMessages.insert(0x104);
+
+    powertrainToComfortMessages.insert(0x105);
+
+    powertrainToComfortMessages.insert(0x201);
+
+    powertrainToComfortMessages.insert(0x301);
+
+    powertrainToComfortMessages.insert(0x401);
 
     std::cout << "\n[GATEWAY] Routing configured:" << std::endl;
-    std::cout << "  Powertrain -> Comfort: Speed(0x101), Brake(0x201), Gear(0x301), ABS(0x401)" << std::endl;
+    std::cout << "  Powertrain -> Comfort: Speed(0x101), RPM(0x102), Fuel(0x103)," << std::endl;
+    std::cout << "                         Oil(0x104), Coolant(0x105), Brake(0x201)," << std::endl;
+    std::cout << "                         Gear(0x301), ABS(0x401)" << std::endl;
     std::cout << "  Comfort -> Powertrain: (none)\n" << std::endl;
 }
 
