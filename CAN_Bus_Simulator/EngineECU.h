@@ -24,6 +24,13 @@ private:
 	FluidData oil;
 	FluidData coolant;
 
+	float fuelTankLevel;  // 0.0f-1.0f (0-100%)
+	float fuelConsumption; 
+	uint16_t engineRPM;
+
+	void calculateRPM(uint8_t speed);
+	void calculateFuelConsumption(uint8_t speed);
+
 	void senderWorker();
 	void updateFluidLevels(uint8_t speed);
 
@@ -34,8 +41,12 @@ public:
 	std::string getName() override;
 	void sendSpeed(uint8_t speed);
 	void receiveFrame(CANFrame& frame) override;
+
 	void getOilData();
 	void getCoolantData();
+	void getFuelData();
+	void getRPMData();
+
 	void shutdown();
 
 };

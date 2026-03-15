@@ -46,6 +46,12 @@ int main() {
     bcm.turnFogLights(true);
     std::this_thread::sleep_for(std::chrono::milliseconds(100));
 
+    engine.getFuelData();
+    std::this_thread::sleep_for(std::chrono::milliseconds(100));
+
+    engine.getRPMData();
+    std::this_thread::sleep_for(std::chrono::milliseconds(100));
+
     engine.sendSpeed(50);
     std::this_thread::sleep_for(std::chrono::milliseconds(100));
 
@@ -63,6 +69,12 @@ int main() {
     climate.displayStatus();
 
     engine.sendSpeed(85);
+    std::this_thread::sleep_for(std::chrono::milliseconds(100));
+
+    engine.getFuelData();
+    std::this_thread::sleep_for(std::chrono::milliseconds(100));
+
+    engine.getRPMData();
     std::this_thread::sleep_for(std::chrono::milliseconds(100));
 
     brakes.pressBrake();
@@ -84,6 +96,12 @@ int main() {
     engine.sendSpeed(30);
     std::this_thread::sleep_for(std::chrono::milliseconds(100));
 
+    engine.getFuelData();
+    std::this_thread::sleep_for(std::chrono::milliseconds(100));
+
+    engine.getRPMData();
+    std::this_thread::sleep_for(std::chrono::milliseconds(100));
+
     bcm.isRaining(false);
     std::this_thread::sleep_for(std::chrono::milliseconds(100));
 
@@ -92,6 +110,12 @@ int main() {
     climate.displayStatus();
 
     bcm.unlockDoors();
+    std::this_thread::sleep_for(std::chrono::milliseconds(100));
+
+    engine.getCoolantData();
+    std::this_thread::sleep_for(std::chrono::milliseconds(100));
+
+    engine.getOilData();
     std::this_thread::sleep_for(std::chrono::milliseconds(100));
 
     bcm.displayStatus();

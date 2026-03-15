@@ -4,7 +4,7 @@
 #include <string>
 
 
-EngineECU::EngineECU(CANBus& b) : bus(b), running(true) {
+EngineECU::EngineECU(CANBus& b) : bus(b), running(true), fuelTankLevel(0.8f) {
 	oil.temperature = 20.0f;
 	oil.level = 0.85f;
 	coolant.temperature = 20.0f;
@@ -35,13 +35,48 @@ void EngineECU::receiveFrame(CANFrame &frame) {
 void EngineECU::getOilData()
 {
 	std::cout<<"Oil temperature : " << oil.temperature <<
-		" | Oil level: " << oil.level;
+		" | Oil level: " << oil.level <<  std::endl;
 }
 
 void EngineECU::getCoolantData()
 {
 	std::cout << "Coolant temperature : " << coolant.temperature <<
-		" | Coolant level: " << coolant.level;
+		" | Coolant level: " << coolant.level<<std::endl;
+}
+
+void EngineECU::getFuelData()
+{
+	std::cout << "Fuel tank level: " << (fuelTankLevel * 100) << "% full | Fuel Consumption: "
+		<< fuelConsumption << "/100km\n";
+}
+
+void EngineECU::getRPMData()
+{
+	std::cout << " Current speed: " << currentSpeed << " at " << engineRPM << " RPM\n";
+}
+
+void EngineECU::calculateRPM(uint8_t speed) {
+	
+	engineRPM = speed * 80;
+
+	if (engineRPM < 800) engineRPM = 800;
+	if (engineRPM > 7000) engineRPM = 7000;  
+}
+
+void EngineECU::calculateFuelConsumption(uint8_t speed) {
+
+	if (speed == 0) {
+		fuelConsumption = 0.0f;  
+	}
+	else if (speed < 40) {
+		fuelConsumption = 10.0f;  
+	}
+	else if (speed < 100) {
+		fuelConsumption = 6.5f;   
+	}
+	else {
+		fuelConsumption = 8.5f;
+	}
 }
 
 void EngineECU::senderWorker() {
@@ -55,6 +90,8 @@ void EngineECU::senderWorker() {
 			lock.unlock();
 
 			currentSpeed = speed;
+			calculateRPM(speed);
+			calculateFuelConsumption(speed);
 			updateFluidLevels(speed);
 
 			CANFrame frame;
