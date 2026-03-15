@@ -132,6 +132,7 @@
     <ClCompile Include="ClimateControlECU.cpp" />
     <ClCompile Include="DashboardECU.cpp" />
     <ClCompile Include="EngineECU.cpp" />
+    <ClCompile Include="GatewayECU.cpp" />
     <ClCompile Include="ICanNode.cpp" />
     <ClCompile Include="TransmissionECU.cpp" />
   </ItemGroup>
@@ -144,6 +145,7 @@
     <ClInclude Include="ClimateControlECU.h" />
     <ClInclude Include="DashboardECU.h" />
     <ClInclude Include="EngineECU.h" />
+    <ClInclude Include="GatewayECU.h" />
     <ClInclude Include="ICanNode.h" />
     <ClInclude Include="TransmissionECU.h" />
   </ItemGroup>

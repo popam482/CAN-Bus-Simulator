@@ -9,26 +9,32 @@
 #include "AbsECU.h"
 #include "ClimateControlECU.h"
 #include "BcmECU.h"
+#include "GatewayECU.h"
 
 int main() {
     CANBus vehicleBus;
+    CANBus bodyBus;
 
     EngineECU engine(vehicleBus);
     DashboardECU dashboard;
     BrakeECU brakes(vehicleBus);
     TransmissionECU transmission(vehicleBus);
     AbsECU abs(vehicleBus);
-    ClimateControlECU climate(vehicleBus, 22.0f, 28.0f);
-    BcmECU bcm(vehicleBus);
+    ClimateControlECU climate(bodyBus, 22.0f, 28.0f);
+    BcmECU bcm(bodyBus);
 
 
     vehicleBus.connectNode(&engine);
-    vehicleBus.connectNode(&dashboard);
+    bodyBus.connectNode(&dashboard);
     vehicleBus.connectNode(&brakes);
     vehicleBus.connectNode(&transmission);
     vehicleBus.connectNode(&abs);
-    vehicleBus.connectNode(&climate);
-    vehicleBus.connectNode(&bcm);
+    bodyBus.connectNode(&climate);
+    bodyBus.connectNode(&bcm);
+
+    GatewayECU gateway(vehicleBus, bodyBus);
+    vehicleBus.connectNode(&gateway);
+    bodyBus.connectNode(&gateway);
 
     std::cout << "\n--- Starting Simulation ---\n" << std::endl;
 
