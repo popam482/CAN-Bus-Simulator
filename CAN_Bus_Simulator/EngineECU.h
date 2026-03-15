@@ -3,17 +3,29 @@
 #include <iostream>
 #include "CANBus.h"
 
+struct FluidData {
+	float temperature;
+	float level; //0.0f-1.0f
+};
+
 class EngineECU: public ICanNode
 {
 private:
 	CANBus& bus;
+
 	std::queue<uint8_t> messageQueue;
 	std::mutex queueMutex;
 	std::condition_variable cv;
 	std::thread senderThread;
 	std::atomic<bool> running;
 
+	uint8_t currentSpeed;
+
+	FluidData oil;
+	FluidData coolant;
+
 	void senderWorker();
+	void updateFluidLevels(uint8_t speed);
 
 public:
 	EngineECU(CANBus& b);
@@ -22,6 +34,8 @@ public:
 	std::string getName() override;
 	void sendSpeed(uint8_t speed);
 	void receiveFrame(CANFrame& frame) override;
+	void getOilData();
+	void getCoolantData();
 	void shutdown();
 
 };

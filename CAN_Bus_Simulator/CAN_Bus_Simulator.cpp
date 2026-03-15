@@ -49,6 +49,12 @@ int main() {
     engine.sendSpeed(50);
     std::this_thread::sleep_for(std::chrono::milliseconds(100));
 
+    engine.getCoolantData();
+    std::this_thread::sleep_for(std::chrono::milliseconds(100));
+
+    engine.getOilData();
+    std::this_thread::sleep_for(std::chrono::milliseconds(100));
+
     bcm.isRaining(true);
     std::this_thread::sleep_for(std::chrono::milliseconds(100));
 

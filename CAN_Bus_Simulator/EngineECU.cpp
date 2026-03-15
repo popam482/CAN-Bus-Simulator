@@ -1,10 +1,14 @@
-#include "EngineECU.h"
+#include "EngineECU.h" 
 
 #include <iostream>
 #include <string>
 
 
 EngineECU::EngineECU(CANBus& b) : bus(b), running(true) {
+	oil.temperature = 20.0f;
+	oil.level = 0.85f;
+	coolant.temperature = 20.0f;
+	coolant.level = 0.75f;
 	senderThread = std::thread(&EngineECU::senderWorker, this);
 }
 
@@ -28,6 +32,18 @@ void EngineECU::receiveFrame(CANFrame &frame) {
     }
 }
 
+void EngineECU::getOilData()
+{
+	std::cout<<"Oil temperature : " << oil.temperature <<
+		" | Oil level: " << oil.level;
+}
+
+void EngineECU::getCoolantData()
+{
+	std::cout << "Coolant temperature : " << coolant.temperature <<
+		" | Coolant level: " << coolant.level;
+}
+
 void EngineECU::senderWorker() {
 	while (running) {
 		std::unique_lock<std::mutex> lock(queueMutex);
@@ -38,12 +54,34 @@ void EngineECU::senderWorker() {
 			messageQueue.pop();
 			lock.unlock();
 
+			currentSpeed = speed;
+			updateFluidLevels(speed);
+
 			CANFrame frame;
 			frame.setId(0x101);
 			frame.setData({ speed });
 			bus.send(this, frame);
 		}
 	}
+}
+
+void EngineECU::updateFluidLevels(uint8_t speed)
+{
+	coolant.temperature = 80.0f + (speed * 0.3f);
+	oil.temperature = 70.0f + (speed * 0.35f);
+
+	if (coolant.temperature > 120.0f) coolant.temperature = 120.0f;
+	if (oil.temperature > 110.0f) oil.temperature = 110.0f;
+
+	if (speed > 50) {
+		coolant.level -= 0.0005f;
+		oil.level -= 0.0003f;
+	}
+
+	if (coolant.level < 0.0f) coolant.level = 0.0f;
+	if (oil.level < 0.0f) oil.level = 0.0f;
+	if (coolant.level > 1.0f) coolant.level = 1.0f;
+	if (oil.level > 1.0f) oil.level = 1.0f;
 }
 
 void EngineECU::shutdown() {
