@@ -131,6 +131,28 @@ void Diagnostics::exportToFile(const std::string& filename) {
 	file << "Fuel Level: " << (fuelLevel * 100) << "%" << std::endl;
 	file.close();
 	std::cout << "[DIAGNOSTICS] Diagnostic report successfully written\n";
+
+	if (oilTemp > 105.0f) {
+		file << "Oil temperature is too high\n";
+	}
+
+	if (oilLevel < 0.20f) {
+		file << "Oil level is too low\n";
+	}
+
+	if (coolantTemp > 115.0f) {
+		file << "Coolant temperature is too high\n";
+	}
+
+	if (coolantLevel < 0.20f) {
+		file << "Coolant level is too low\n";
+	}
+
+	if (fuelLevel < 0.10f) {
+		file << "Fuel level is too low\n";
+	}
+
+
 }
 
 void Diagnostics::shutdown() {

@@ -8,7 +8,7 @@ EngineECU::EngineECU(CANBus& b) : bus(b), running(true), fuelTankLevel(0.8f) {
 	oil.temperature = 20.0f;
 	oil.level = 0.85f;
 	coolant.temperature = 20.0f;
-	coolant.level = 0.75f;
+	coolant.level = 0.87f;
 	senderThread = std::thread(&EngineECU::senderWorker, this);
 }
 
