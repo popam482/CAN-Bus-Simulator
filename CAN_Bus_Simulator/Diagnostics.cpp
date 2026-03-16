@@ -111,7 +111,7 @@ void Diagnostics::displayFaults() {
 
 	std::cout << "\n[ACTIVE FAULTS]" << std::endl;
 	if (activeFaults.empty()) {
-		std::cout << "   No active faults detected" << std::endl;
+		std::cout << "   No active faults detected\n" << std::endl;
 	}
 	else {
 		int i = 1;
@@ -119,6 +119,18 @@ void Diagnostics::displayFaults() {
 			std::cout << "  " << i++ << ". " << getFaultDescription(fault) << std::endl;
 		}
 	}
+}
+
+void Diagnostics::exportToFile(const std::string& filename) {
+	std::ofstream file(filename);
+	file << "=== DIAGNOSTIC REPORT ===" << std::endl;
+	file << "Oil Temp: " << oilTemp << "C" << std::endl;
+	file << "Oil Level: " << (oilLevel * 100) << "%" << std::endl;
+	file << "Coolant Temp: " << coolantTemp << "C" << std::endl;
+	file << "Coolant Level: " << (coolantLevel * 100) << "%" << std::endl;
+	file << "Fuel Level: " << (fuelLevel * 100) << "%" << std::endl;
+	file.close();
+	std::cout << "[DIAGNOSTICS] Diagnostic report successfully written\n";
 }
 
 void Diagnostics::shutdown() {

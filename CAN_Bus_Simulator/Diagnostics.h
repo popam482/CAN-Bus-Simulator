@@ -4,6 +4,7 @@
 #include <vector>
 #include <iomanip>
 #include <set>
+#include <fstream>
 
 enum class FaultCode {
 	NO_FAULT = 0x00,
@@ -43,7 +44,7 @@ public:
 
 	std::string getName() override;
 	void receiveFrame(CANFrame& frame) override;
-
+	void exportToFile(const std::string& filename);
 	void displayFaults();
 	void shutdown();
 };

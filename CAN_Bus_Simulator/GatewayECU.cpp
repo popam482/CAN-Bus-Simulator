@@ -105,6 +105,4 @@ void GatewayECU::shutdown() {
     if (comfortMonitorThread.joinable()) {
         comfortMonitorThread.join();
     }
-
-    std::cout << "[GATEWAY] Shutdown complete" << std::endl;
 }

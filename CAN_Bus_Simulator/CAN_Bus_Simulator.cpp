@@ -10,6 +10,7 @@
 #include "ClimateControlECU.h"
 #include "BcmECU.h"
 #include "GatewayECU.h"
+#include "Diagnostics.h"
 
 int main() {
     CANBus vehicleBus;
@@ -22,6 +23,7 @@ int main() {
     AbsECU abs(vehicleBus);
     ClimateControlECU climate(bodyBus, 22.0f, 28.0f);
     BcmECU bcm(bodyBus);
+    Diagnostics diagnostic(vehicleBus);
 
 
     vehicleBus.connectNode(&engine);
@@ -31,6 +33,7 @@ int main() {
     vehicleBus.connectNode(&abs);
     bodyBus.connectNode(&climate);
     bodyBus.connectNode(&bcm);
+    vehicleBus.connectNode(&diagnostic);
 
     GatewayECU gateway(vehicleBus, bodyBus);
     vehicleBus.connectNode(&gateway);
@@ -131,8 +134,16 @@ int main() {
     climate.shutdown();       
     bcm.shutdown();           
     gateway.shutdown();
+    diagnostic.shutdown();
+
+    std::cout << "[GATEWAY] Shutdown complete" << std::endl;
+
 
     std::cout << "\n--- Simulation ended ---\n" << std::endl;
+   
+    std::string filename="report.txt";
+
+    diagnostic.exportToFile(filename);
 
     return 0;
 }
