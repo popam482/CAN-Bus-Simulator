@@ -131,6 +131,7 @@
     <ClCompile Include="CAN_Bus_Simulator.cpp" />
     <ClCompile Include="ClimateControlECU.cpp" />
     <ClCompile Include="DashboardECU.cpp" />
+    <ClCompile Include="Diagnostics.cpp" />
     <ClCompile Include="EngineECU.cpp" />
     <ClCompile Include="GatewayECU.cpp" />
     <ClCompile Include="ICanNode.cpp" />
@@ -144,6 +145,7 @@
     <ClInclude Include="CANFrame.h" />
     <ClInclude Include="ClimateControlECU.h" />
     <ClInclude Include="DashboardECU.h" />
+    <ClInclude Include="Diagnostics.h" />
     <ClInclude Include="EngineECU.h" />
     <ClInclude Include="GatewayECU.h" />
     <ClInclude Include="ICanNode.h" />
