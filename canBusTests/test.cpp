@@ -1,11 +1,18 @@
 #include "pch.h"
 #include "EngineECU.h"
 #include "CANBus.h"
+#include "BrakeECU.h"
 
 class EngineECUTest : public ::testing::Test {
 protected:
     CANBus bus;
     EngineECU engine{ bus };
+};
+
+class BrakeECUTest : public ::testing::Test {
+protected:
+    CANBus bus;
+    BrakeECU brakes{ bus };
 };
 
 TEST_F(EngineECUTest, ConstructorIntializeOilTemp) {
@@ -202,4 +209,25 @@ TEST_F(EngineECUTest, AllStateSetAtOnce) {
     EXPECT_FLOAT_EQ(engine.getFuelLevel(), 0.85f);
     EXPECT_EQ(engine.getEngineRPM(), 800 + (70 * 80));
     EXPECT_FLOAT_EQ(engine.getFuelConsumption(), 6.5f);
+}
+
+TEST_F(BrakeECUTest, ConstructorInitializesBrakePressuredFalse) {
+    EXPECT_FALSE(brakes.isBrakePressured());
+}
+
+TEST_F(BrakeECUTest, GetNameReturnsBrakeSensorECU) {
+    EXPECT_EQ(brakes.getName(), "Brake_Sensor_ECU");
+}
+
+TEST_F(BrakeECUTest, PressBrakeSetsPressuredTrue) {
+    brakes.pressBrake();
+    EXPECT_TRUE(brakes.isBrakePressured());
+}
+
+TEST_F(BrakeECUTest, ReleaseBrakeSetsPressuredFalse) {
+    brakes.pressBrake();
+    std::this_thread::sleep_for(std::chrono::milliseconds(100));
+    brakes.releaseBrake();
+    std::this_thread::sleep_for(std::chrono::milliseconds(100));
+    EXPECT_FALSE(brakes.isBrakePressured());
 }

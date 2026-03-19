@@ -22,5 +22,9 @@ public:
 	std::string getName() override;
 	void pressBrake();
 	void receiveFrame(CANFrame& frame) override;
+
+	bool isBrakePressured();
+	void releaseBrake();
+
 	void shutdown();
 };

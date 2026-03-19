@@ -37,6 +37,14 @@ void BrakeECU::receiveFrame(CANFrame& frame) {
 	//no messages from other nodes
 }
 
+void BrakeECU::releaseBrake() {
+	brakePressured = false;
+}
+
+bool BrakeECU::isBrakePressured(){
+	return brakePressured;
+}
+
 void BrakeECU::shutdown() {
 	running = false;
 	if (brakeThread.joinable()) {
