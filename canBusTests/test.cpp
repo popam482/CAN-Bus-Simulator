@@ -2,6 +2,7 @@
 #include "EngineECU.h"
 #include "CANBus.h"
 #include "BrakeECU.h"
+#include "AbsECU.h"
 
 class EngineECUTest : public ::testing::Test {
 protected:
@@ -15,6 +16,11 @@ protected:
     BrakeECU brakes{ bus };
 };
 
+class AbsECUTest : public ::testing::Test{
+protected:
+    CANBus bus;
+    AbsECU abs{bus};
+};
 TEST_F(EngineECUTest, ConstructorIntializeOilTemp) {
     engine.setOilTemp(85.5f);
     EXPECT_EQ(engine.getOilTemp(), 85.5f);
@@ -230,4 +236,44 @@ TEST_F(BrakeECUTest, ReleaseBrakeSetsPressuredFalse) {
     brakes.releaseBrake();
     std::this_thread::sleep_for(std::chrono::milliseconds(100));
     EXPECT_FALSE(brakes.isBrakePressured());
+}
+
+
+TEST_F(AbsECUTest, ConstructorInitializesNotActivated) {
+    EXPECT_FALSE(abs.isActivated());
+}
+
+TEST_F(AbsECUTest, GetNameReturnsABSECU) {
+    EXPECT_EQ(abs.getName(), "ABS_ECU");
+}
+
+TEST_F(AbsECUTest, ConstructorInitializesWheelSpeedToZero) {
+    EXPECT_EQ(abs.getWheelSpeed(), 0);
+}
+
+TEST_F(AbsECUTest, ReceiveHighSpeedFrameActivatesABS) {
+    CANFrame frame;
+    frame.setId(0x201);
+    frame.setData({ 120 });
+
+    abs.receiveFrame(frame);
+    std::this_thread::sleep_for(std::chrono::milliseconds(100));
+
+    EXPECT_TRUE(abs.isActivated());
+}
+
+TEST_F(AbsECUTest, ReceiveLowSpeedFrameDeactivatesABS) {
+    CANFrame highSpeedFrame;
+    highSpeedFrame.setId(0x101);
+    highSpeedFrame.setData({ 120 });
+    abs.receiveFrame(highSpeedFrame);
+    std::this_thread::sleep_for(std::chrono::milliseconds(100));
+
+    CANFrame lowSpeedFrame;
+    lowSpeedFrame.setId(0x101);
+    lowSpeedFrame.setData({ 20 });
+    abs.receiveFrame(lowSpeedFrame);
+    std::this_thread::sleep_for(std::chrono::milliseconds(100));
+
+    EXPECT_FALSE(abs.isActivated());
 }

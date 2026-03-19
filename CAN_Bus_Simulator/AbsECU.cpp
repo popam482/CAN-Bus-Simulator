@@ -1,6 +1,6 @@
 #include "AbsECU.h"
 
-AbsECU::AbsECU(CANBus& b) : bus(b), wheelSpeed(0), isActivated(false), running(true) {
+AbsECU::AbsECU(CANBus& b) : bus(b), wheelSpeed(0), absActivated(false), running(true) {
     processorThread = std::thread(&AbsECU::processorWorker, this);
 }
 
@@ -33,10 +33,13 @@ void AbsECU::processorWorker() {
             if (frame.getId() == 0x201) {
                 wheelSpeed = frame.getData(0);
 
-                if (wheelSpeed < 10) {  
+                if (wheelSpeed > 80 || (frame.getId() == 0x201 && wheelSpeed < 10))
+                    absActivated = true;
+
+                else if (wheelSpeed < 20) {  
                     std::cout << "  -> [ABS] Wheel lock detected! Activating ABS..." << std::endl;
                     applyABS();
-                    isActivated = true;
+                    absActivated = true;
                 }
             }
         }
@@ -49,6 +52,10 @@ void AbsECU::applyABS() {
     frame.setData({ 1 });
     bus.send(this, frame);
 }
+
+bool AbsECU::isActivated(){ return absActivated; }
+uint8_t AbsECU::getWheelSpeed(){ return wheelSpeed; }
+void AbsECU::setWheelSpeed(uint8_t speed) { wheelSpeed=speed;}
 
 void AbsECU::shutdown() {
     running = false;

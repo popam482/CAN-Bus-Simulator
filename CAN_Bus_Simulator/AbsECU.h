@@ -11,7 +11,7 @@ class AbsECU : public ICanNode {
 private:
     CANBus& bus;
     uint8_t wheelSpeed;
-    bool isActivated;
+    bool absActivated;
 
     std::queue<CANFrame> frameQueue;
     std::mutex frameMutex;
@@ -28,5 +28,9 @@ public:
 
     std::string getName() override;
     void receiveFrame(CANFrame& frame) override;
+
+    bool isActivated();
+    uint8_t getWheelSpeed();
+    void setWheelSpeed(uint8_t speed);
     void shutdown();
 };
