@@ -28,9 +28,6 @@ private:
 	float fuelConsumption; 
 	uint16_t engineRPM;
 
-	void calculateRPM(uint8_t speed);
-	void calculateFuelConsumption(uint8_t speed);
-
 	void senderWorker();
 	void updateFluidLevels(uint8_t speed);
 
@@ -44,6 +41,9 @@ public:
 	void sendSpeed(uint8_t speed);
 	void receiveFrame(CANFrame& frame) override;
 
+	void calculateRPM(uint8_t speed);
+	void calculateFuelConsumption(uint8_t speed);
+
 	void getOilData();
 	void getCoolantData();
 	void getFuelData();
@@ -51,5 +51,19 @@ public:
 
 	void shutdown();
 
-};
+	void setOilTemp(float temp);
+	void setOilLevel(float level);
+	void setCoolantTemp(float temp);
+	void setCoolantLevel(float level);
+	void setFuelLevel(float level);
 
+	float getOilTemp();
+	float getOilLevel();
+	float getCoolantTemp();
+	float getCoolantLevel();
+	float getFuelLevel();
+	float getFuelConsumption();
+	uint16_t getEngineRPM();
+	uint8_t getCurrentSpeed();
+
+};

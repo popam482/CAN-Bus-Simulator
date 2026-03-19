@@ -2,5 +2,5 @@
 Oil Temp: 99C
 Oil Level: 84%
 Coolant Temp: 105C
-Coolant Level: 9%
+Coolant Level: 79%
 Fuel Level: 80%

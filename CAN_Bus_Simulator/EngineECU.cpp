@@ -1,5 +1,4 @@
 #include "EngineECU.h" 
-
 #include <iostream>
 #include <string>
 
@@ -8,7 +7,7 @@ EngineECU::EngineECU(CANBus& b) : bus(b), running(true), fuelTankLevel(0.8f) {
 	oil.temperature = 20.0f;
 	oil.level = 0.85f;
 	coolant.temperature = 20.0f;
-	coolant.level = 0.87f;
+	coolant.level = 0.8f;
 	senderThread = std::thread(&EngineECU::senderWorker, this);
 }
 
@@ -168,3 +167,18 @@ void EngineECU::shutdown() {
 		senderThread.join();
 	}
 }
+
+void EngineECU::setOilTemp(float temp) { oil.temperature = temp; }
+void EngineECU::setOilLevel(float level) { oil.level = level; }
+void EngineECU::setCoolantTemp(float temp) { coolant.temperature = temp; }
+void EngineECU::setCoolantLevel(float level) { coolant.level = level; }
+void EngineECU::setFuelLevel(float level) { fuelTankLevel = level; }
+
+float EngineECU::getOilTemp() { return oil.temperature; }
+float EngineECU::getOilLevel() { return oil.level; }
+float EngineECU::getCoolantTemp() { return coolant.temperature; }
+float EngineECU::getCoolantLevel() { return coolant.level; }
+float EngineECU::getFuelLevel() { return fuelTankLevel; }
+float EngineECU::getFuelConsumption() { return fuelConsumption; }
+uint16_t EngineECU::getEngineRPM() { return engineRPM; }
+uint8_t EngineECU::getCurrentSpeed() { return currentSpeed; }
