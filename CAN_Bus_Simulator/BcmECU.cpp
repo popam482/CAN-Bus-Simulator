@@ -3,7 +3,7 @@
 #include <chrono>
 
 BcmECU::BcmECU(CANBus& b)
-	: bus(b), wipersOn(false), doorLockStatus(0), running(true) {
+	: bus(b), headLightsOn(false), wipersOn(false), doorLockStatus(0), running(true) {
 
 	doorState.frontLeftDoor = false;
 	doorState.frontRightDoor = false;
@@ -172,6 +172,29 @@ void BcmECU::displayStatus() {
 	std::cout << "  Fog Lights: " << (lightState.fogLights ? "ON" : "OFF") << std::endl;
 	std::cout << "  Wipers: " << (wipersOn ? "ON" : "OFF") << std::endl;
 	std::cout << std::endl;
+}
+
+bool BcmECU::getHeadlightsStatus(){ return headLightsOn; }
+bool BcmECU::getWiperStatus(){ return wipersOn; }
+
+void BcmECU::setHeadlights(bool state) { headLightsOn = state; }
+void BcmECU::setWipers(bool state) { wipersOn = state; }
+
+
+void BcmECU::sendHeadlightsStatus() {
+	CANFrame frame;
+	frame.setId(0x601);
+	uint8_t data = headLightsOn ? 1 : 0;
+	frame.setData({ data });
+	bus.send(this, frame);
+}
+
+void BcmECU::sendWipersStatus() {
+	CANFrame frame;
+	frame.setId(0x602);
+	uint8_t data = wipersOn ? 1 : 0;
+	frame.setData({ data });
+	bus.send(this, frame);
 }
 
 void BcmECU::shutdown() {

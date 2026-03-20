@@ -30,6 +30,7 @@ private:
 	LightState lightState;
 	bool wipersOn;
 	int doorLockStatus;  
+	bool headLightsOn;
 
 	std::queue<CANFrame> frameQueue;
 	std::mutex bcmMutex;
@@ -57,5 +58,15 @@ public:
 	void turnFogLights(bool on);
 	void isRaining(bool rain);
 	void displayStatus();
+
+	bool getHeadlightsStatus();
+	bool getWiperStatus();
+
+	void setHeadlights(bool state);
+	void setWipers(bool state);
+
+	void sendHeadlightsStatus();
+	void sendWipersStatus();
+
 	void shutdown();
 };

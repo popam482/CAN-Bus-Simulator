@@ -105,6 +105,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\CAN_Bus_Simulator\AbsECU.cpp" />
+    <ClCompile Include="..\CAN_Bus_Simulator\BcmECU.cpp" />
     <ClCompile Include="..\CAN_Bus_Simulator\BrakeECU.cpp" />
     <ClCompile Include="..\CAN_Bus_Simulator\CANBus.cpp" />
     <ClCompile Include="..\CAN_Bus_Simulator\CANFrame.cpp" />

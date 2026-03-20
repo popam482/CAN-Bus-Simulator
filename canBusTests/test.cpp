@@ -4,6 +4,8 @@
 #include "BrakeECU.h"
 #include "AbsECU.h"
 #include "TransmissionECU.h"
+#include "BcmECU.h"
+#include <BcmECU.h>
 
 class EngineECUTest : public ::testing::Test {
 protected:
@@ -27,6 +29,12 @@ class TransmissionECUTest : public ::testing::Test {
 protected:
     CANBus bus;
     TransmissionECU transmission{bus};
+};
+
+class BcmECUTest : public ::testing::Test {
+protected:
+    CANBus bus;
+    BcmECU bcm{ bus };
 };
 
 TEST_F(EngineECUTest, ConstructorIntializeOilTemp) {
@@ -444,4 +452,78 @@ TEST_F(TransmissionECUTest, BrakeFollowedByAcceleration) {
     std::this_thread::sleep_for(std::chrono::milliseconds(150));
 
     EXPECT_GT(transmission.getCurrentGear(), gearAfterBrake);
+}
+
+TEST_F(BcmECUTest, ConstructorInitializesLightsOff) {
+    EXPECT_FALSE(bcm.getHeadlightsStatus());
+    EXPECT_FALSE(bcm.getWiperStatus());
+}
+
+TEST_F(BcmECUTest, GetNameReturnsBCMECU) {
+    EXPECT_EQ(bcm.getName(), "BCM_ECU");
+}
+
+TEST_F(BcmECUTest, TurnHeadlightsOn) {
+    bcm.setHeadlights(true);
+    EXPECT_TRUE(bcm.getHeadlightsStatus());
+}
+
+TEST_F(BcmECUTest, TurnHeadlightsOff) {
+    bcm.setHeadlights(true);
+    bcm.setHeadlights(false);
+    EXPECT_FALSE(bcm.getHeadlightsStatus());
+}
+
+TEST_F(BcmECUTest, TurnWipersOn) {
+    bcm.setWipers(true);
+    EXPECT_TRUE(bcm.getWiperStatus());
+}
+
+TEST_F(BcmECUTest, TurnWipersOff) {
+    bcm.setWipers(false);
+    EXPECT_FALSE(bcm.getWiperStatus());
+}
+
+TEST_F(BcmECUTest, ToggleHeadlightsManyTimes) {
+    for (int i = 0; i < 10; ++i) {
+        bcm.setHeadlights(true);
+        EXPECT_TRUE(bcm.getHeadlightsStatus());
+
+        bcm.setHeadlights(false);
+        EXPECT_FALSE(bcm.getHeadlightsStatus());
+    }
+}
+
+TEST_F(BcmECUTest, ToggleWipersManyTimes) {
+    for (int i = 0; i < 10; ++i) {
+        bcm.setWipers(true);
+        EXPECT_TRUE(bcm.getWiperStatus());
+
+        bcm.setWipers(false);
+        EXPECT_FALSE(bcm.getWiperStatus());
+    }
+}
+
+TEST_F(BcmECUTest, HeadlightsAndWipersIndependent) {
+    bcm.setHeadlights(true);
+    bcm.setWipers(false);
+
+    EXPECT_TRUE(bcm.getHeadlightsStatus());
+    EXPECT_FALSE(bcm.getWiperStatus());
+}
+
+TEST_F(BcmECUTest, BothHeadlightsAndWipersOn) {
+    bcm.setHeadlights(true);
+    bcm.setWipers(true);
+
+    EXPECT_TRUE(bcm.getHeadlightsStatus());
+    EXPECT_TRUE(bcm.getWiperStatus());
+}
+
+TEST_F(BcmECUTest, BothHeadlightsAndWipersOff) {
+    bcm.setHeadlights(false);
+    bcm.setWipers(false);
+
+    EXPECT_FALSE(bcm.getHeadlightsStatus());
+    EXPECT_FALSE(bcm.getWiperStatus());
 }
