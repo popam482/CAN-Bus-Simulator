@@ -5,7 +5,7 @@
 #include "AbsECU.h"
 #include "TransmissionECU.h"
 #include "BcmECU.h"
-#include <BcmECU.h>
+#include "DashboardECU.h"
 
 class EngineECUTest : public ::testing::Test {
 protected:
@@ -35,6 +35,11 @@ class BcmECUTest : public ::testing::Test {
 protected:
     CANBus bus;
     BcmECU bcm{ bus };
+};
+
+class DashboardECUTest : public ::testing::Test {
+protected:
+    DashboardECU dashboard;
 };
 
 TEST_F(EngineECUTest, ConstructorIntializeOilTemp) {
@@ -526,4 +531,69 @@ TEST_F(BcmECUTest, BothHeadlightsAndWipersOff) {
 
     EXPECT_FALSE(bcm.getHeadlightsStatus());
     EXPECT_FALSE(bcm.getWiperStatus());
+}
+
+TEST_F(DashboardECUTest, ConstructorInitializesSpeedToZero) {
+    EXPECT_EQ(dashboard.getDisplayedSpeed(), 0);
+}
+
+TEST_F(DashboardECUTest, ConstructorInitializesRPMToZero) {
+    EXPECT_EQ(dashboard.getDisplayedRPM(), 0);
+}
+
+TEST_F(DashboardECUTest, ConstructorInitializesFuelLevelToZero) {
+    EXPECT_EQ(dashboard.getDisplayedFuelLevel(), 0);
+}
+
+TEST_F(DashboardECUTest, SetDisplayedSpeed) {
+    dashboard.setDisplayedSpeed(50);
+    EXPECT_EQ(dashboard.getDisplayedSpeed(), 50);
+}
+
+TEST_F(DashboardECUTest, SetDisplayedRPM) {
+    dashboard.setDisplayedRPM(3200);
+    EXPECT_EQ(dashboard.getDisplayedRPM(), 3200);
+}
+
+TEST_F(DashboardECUTest, SetDisplayedFuelLevel) {
+    dashboard.setDisplayedFuelLevel(75);
+    EXPECT_EQ(dashboard.getDisplayedFuelLevel(), 75);
+}
+
+TEST_F(DashboardECUTest, SetOilTemp) {
+    dashboard.setDisplayedOilTemp(85);
+    EXPECT_EQ(dashboard.getDisplayedOilTemp(), 85);
+}
+
+TEST_F(DashboardECUTest, SetCoolantTemp) {
+    dashboard.setDisplayedCoolantTemp(95);
+    EXPECT_EQ(dashboard.getDisplayedCoolantTemp(), 95);
+}
+
+
+TEST_F(DashboardECUTest, SpeedMultipleUpdates) {
+    std::vector<uint8_t> speeds = { 10, 30, 50, 70, 90 };
+
+    for (uint8_t speed : speeds) {
+        dashboard.setDisplayedSpeed(speed);
+        EXPECT_EQ(dashboard.getDisplayedSpeed(), speed);
+    }
+}
+
+TEST_F(DashboardECUTest, RPMMultipleUpdates) {
+    std::vector<uint16_t> rpms = { 800, 1500, 3000, 5000, 6500 };
+
+    for (uint16_t rpm : rpms) {
+        dashboard.setDisplayedRPM(rpm);
+        EXPECT_EQ(dashboard.getDisplayedRPM(), rpm);
+    }
+}
+
+TEST_F(DashboardECUTest, FuelLevelMultipleUpdates) {
+    std::vector<uint8_t> fuels = { 100, 75, 50, 25, 10 };
+
+    for (uint8_t fuel : fuels) {
+        dashboard.setDisplayedFuelLevel(fuel);
+        EXPECT_EQ(dashboard.getDisplayedFuelLevel(), fuel);
+    }
 }
