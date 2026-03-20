@@ -3,6 +3,7 @@
 #include "CANBus.h"
 #include "BrakeECU.h"
 #include "AbsECU.h"
+#include "TransmissionECU.h"
 
 class EngineECUTest : public ::testing::Test {
 protected:
@@ -21,6 +22,13 @@ protected:
     CANBus bus;
     AbsECU abs{bus};
 };
+
+class TransmissionECUTest : public ::testing::Test {
+protected:
+    CANBus bus;
+    TransmissionECU transmission{bus};
+};
+
 TEST_F(EngineECUTest, ConstructorIntializeOilTemp) {
     engine.setOilTemp(85.5f);
     EXPECT_EQ(engine.getOilTemp(), 85.5f);
@@ -276,4 +284,164 @@ TEST_F(AbsECUTest, ReceiveLowSpeedFrameDeactivatesABS) {
     std::this_thread::sleep_for(std::chrono::milliseconds(100));
 
     EXPECT_FALSE(abs.isActivated());
+}
+
+TEST_F(TransmissionECUTest, ConstructorInitializesGearToNeutral) {
+    EXPECT_EQ(transmission.getCurrentGear(), 0);
+}
+
+TEST_F(TransmissionECUTest, GetNameReturnsTransmissionECU) {
+    EXPECT_EQ(transmission.getName(), "TransmissionECU");
+}
+
+TEST_F(TransmissionECUTest, ToGear1) {
+    CANFrame frame;
+    frame.setId(0x101);
+    frame.setData({ 10 });
+
+    transmission.receiveFrame(frame);
+    std::this_thread::sleep_for(std::chrono::milliseconds(150));
+
+    EXPECT_EQ(transmission.getCurrentGear(), 1);
+}
+
+TEST_F(TransmissionECUTest, ToGear2) {
+    CANFrame frame;
+    frame.setId(0x101);
+    frame.setData({ 30 });
+
+    transmission.receiveFrame(frame);
+    std::this_thread::sleep_for(std::chrono::milliseconds(150));
+
+    EXPECT_EQ(transmission.getCurrentGear(), 2);
+}
+
+TEST_F(TransmissionECUTest, ToGear3) {
+    CANFrame frame;
+    frame.setId(0x101);
+    frame.setData({ 50 });
+
+    transmission.receiveFrame(frame);
+    std::this_thread::sleep_for(std::chrono::milliseconds(150));
+
+    EXPECT_EQ(transmission.getCurrentGear(), 3);
+}
+
+TEST_F(TransmissionECUTest, ToGear4) {
+    CANFrame frame;
+    frame.setId(0x101);
+    frame.setData({ 70 });
+
+    transmission.receiveFrame(frame);
+    std::this_thread::sleep_for(std::chrono::milliseconds(150));
+
+    EXPECT_EQ(transmission.getCurrentGear(), 4);
+}
+
+TEST_F(TransmissionECUTest, ToGear5) {
+    CANFrame frame;
+    frame.setId(0x101);
+    frame.setData({ 90 });
+
+    transmission.receiveFrame(frame);
+    std::this_thread::sleep_for(std::chrono::milliseconds(150));
+
+    EXPECT_EQ(transmission.getCurrentGear(), 5);
+}
+
+TEST_F(TransmissionECUTest, ReceiveBrakeSignalDownshifts) {
+    CANFrame speedFrame;
+    speedFrame.setId(0x101);
+    speedFrame.setData({ 70 });
+    transmission.receiveFrame(speedFrame);
+    std::this_thread::sleep_for(std::chrono::milliseconds(150));
+    EXPECT_EQ(transmission.getCurrentGear(), 4);
+
+    CANFrame brakeFrame;
+    brakeFrame.setId(0x201);
+    brakeFrame.setData({ 1 });
+    transmission.receiveFrame(brakeFrame);
+    std::this_thread::sleep_for(std::chrono::milliseconds(150));
+
+    EXPECT_LT(transmission.getCurrentGear(), 4);
+}
+
+TEST_F(TransmissionECUTest, SequentialSpeedIncreaseShiftsProgressive) {
+    std::vector<uint8_t> speeds = { 10, 25, 40, 55, 75, 95 };
+    std::vector<uint8_t> expectedGears = { 1, 2, 2, 3, 4, 5 };
+
+    for (size_t i = 0; i < speeds.size(); ++i) {
+        CANFrame frame;
+        frame.setId(0x101);
+        frame.setData({ speeds[i] });
+
+        transmission.receiveFrame(frame);
+        std::this_thread::sleep_for(std::chrono::milliseconds(150));
+
+        EXPECT_EQ(transmission.getCurrentGear(), expectedGears[i]);
+    }
+}
+
+TEST_F(TransmissionECUTest, SequentialSpeedDecreaseShiftsRegressive) {
+    CANFrame highSpeedFrame;
+    highSpeedFrame.setId(0x101);
+    highSpeedFrame.setData({ 100 });
+    transmission.receiveFrame(highSpeedFrame);
+    std::this_thread::sleep_for(std::chrono::milliseconds(150));
+    EXPECT_EQ(transmission.getCurrentGear(), 5);
+
+    std::vector<uint8_t> speeds = { 80, 60, 40, 20, 10 };
+    std::vector<uint8_t> expectedGears = { 4, 3, 2, 1, 1 };  
+
+    for (size_t i = 0; i < speeds.size(); ++i) {
+        CANFrame frame;
+        frame.setId(0x101);
+        frame.setData({ speeds[i] });
+
+        transmission.receiveFrame(frame);
+        std::this_thread::sleep_for(std::chrono::milliseconds(150));
+
+        EXPECT_EQ(transmission.getCurrentGear(), expectedGears[i]);
+    }
+}
+
+TEST_F(TransmissionECUTest, ZeroSpeedReturnsToNeutral) {
+    CANFrame speedFrame;
+    speedFrame.setId(0x101);
+    speedFrame.setData({ 50 });
+    transmission.receiveFrame(speedFrame);
+    std::this_thread::sleep_for(std::chrono::milliseconds(150));
+    EXPECT_EQ(transmission.getCurrentGear(), 3);
+
+    CANFrame zeroSpeedFrame;
+    zeroSpeedFrame.setId(0x101);
+    zeroSpeedFrame.setData({ 0 });
+    transmission.receiveFrame(zeroSpeedFrame);
+    std::this_thread::sleep_for(std::chrono::milliseconds(150));
+
+    EXPECT_EQ(transmission.getCurrentGear(), 0);
+}
+
+TEST_F(TransmissionECUTest, BrakeFollowedByAcceleration) {
+    CANFrame speedFrame;
+    speedFrame.setId(0x101);
+    speedFrame.setData({ 70 });
+    transmission.receiveFrame(speedFrame);
+    std::this_thread::sleep_for(std::chrono::milliseconds(150));
+
+    CANFrame brakeFrame;
+    brakeFrame.setId(0x201);
+    brakeFrame.setData({ 1 });
+    transmission.receiveFrame(brakeFrame);
+    std::this_thread::sleep_for(std::chrono::milliseconds(150));
+
+    uint8_t gearAfterBrake = transmission.getCurrentGear();
+
+    CANFrame accelerateFrame;
+    accelerateFrame.setId(0x101);
+    accelerateFrame.setData({ 80 });
+    transmission.receiveFrame(accelerateFrame);
+    std::this_thread::sleep_for(std::chrono::milliseconds(150));
+
+    EXPECT_GT(transmission.getCurrentGear(), gearAfterBrake);
 }

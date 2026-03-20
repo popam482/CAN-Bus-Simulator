@@ -28,5 +28,6 @@ public:
 	std::string getName() override;
 	void receiveFrame(CANFrame& frame) override;
 	void sendCurrentGear();
+	uint8_t getCurrentGear();
 	void shutdown();
 };
