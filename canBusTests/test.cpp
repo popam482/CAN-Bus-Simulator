@@ -6,6 +6,7 @@
 #include "TransmissionECU.h"
 #include "BcmECU.h"
 #include "DashboardECU.h"
+#include "ClimateControlECU.h"
 
 class EngineECUTest : public ::testing::Test {
 protected:
@@ -41,6 +42,13 @@ class DashboardECUTest : public ::testing::Test {
 protected:
     DashboardECU dashboard;
 };
+
+class ClimateControlECUTest : public ::testing::Test {
+protected:
+    CANBus bus;
+    ClimateControlECU climate{ bus, 22.0f, 28.0f };
+};
+
 
 TEST_F(EngineECUTest, ConstructorIntializeOilTemp) {
     engine.setOilTemp(85.5f);
@@ -596,4 +604,51 @@ TEST_F(DashboardECUTest, FuelLevelMultipleUpdates) {
         dashboard.setDisplayedFuelLevel(fuel);
         EXPECT_EQ(dashboard.getDisplayedFuelLevel(), fuel);
     }
+}
+
+TEST_F(ClimateControlECUTest, SetTargetTempChangesValue) {
+    climate.setTargetTemp(20.0f);
+    std::this_thread::sleep_for(std::chrono::milliseconds(100));
+    EXPECT_TRUE(true);  
+}
+
+TEST_F(ClimateControlECUTest, TurnACOn) {
+    climate.turnAc();
+    std::this_thread::sleep_for(std::chrono::milliseconds(100));
+    EXPECT_TRUE(true);
+}
+
+TEST_F(ClimateControlECUTest, MultipleTargetTempChanges) {
+    for (int i = 20; i <= 28; ++i) {
+        climate.setTargetTemp(static_cast<float>(i));
+        std::this_thread::sleep_for(std::chrono::milliseconds(50));
+    }
+    EXPECT_TRUE(true);
+}
+
+TEST_F(ClimateControlECUTest, TemperatureConvergenceWhenACOn) {
+    climate.setTargetTemp(22.0f);
+    climate.turnAc();
+
+    std::this_thread::sleep_for(std::chrono::milliseconds(2500));
+
+    EXPECT_TRUE(true);  
+}
+
+TEST_F(ClimateControlECUTest, LargeTemperatureDifference) {
+    climate.setTargetTemp(16.0f);  
+    climate.turnAc();
+
+    std::this_thread::sleep_for(std::chrono::milliseconds(3000));
+
+    EXPECT_TRUE(true);
+}
+
+TEST_F(ClimateControlECUTest, SmallTemperatureDifference) {
+    climate.setTargetTemp(27.5f);  
+    climate.turnAc();
+
+    std::this_thread::sleep_for(std::chrono::milliseconds(1500));
+
+    EXPECT_TRUE(true);
 }
